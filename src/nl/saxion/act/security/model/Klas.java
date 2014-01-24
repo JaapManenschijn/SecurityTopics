@@ -22,6 +22,12 @@ public class Klas {
 			}
 		}
 	}
+	
+	public void addVak(Vak vak){
+		if(!vakken.contains(vak)){
+			vakken.add(vak);
+		}
+	}
 
 	public long getId() {
 		return id;
