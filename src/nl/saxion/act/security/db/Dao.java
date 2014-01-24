@@ -1,7 +1,97 @@
 package nl.saxion.act.security.db;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Formatter;
 
 public class Dao {
+
+	private DBManager manager = DBManager.getInstance();
+	private static Dao instance;
+
+	private Dao() {
+	}
+
+	public static Dao getInstance() {
+		if (instance == null) {
+			instance = new Dao();
+		}
+		return instance;
+	}
+	
+	public boolean getCijfersVanStudentVanVak(long userId, String wachtwoord) {
+		String result = "";
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT wachtwoord FROM users WHERE id = ?");
+			prepareStatement.setLong(1, userId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			if (resultSet.next()) {
+				result = resultSet.getString(1);
+			}
+			return result.equals(encryptPassword(wachtwoord));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public boolean checkLogin(long userId, String wachtwoord) {
+		String result = "";
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT wachtwoord FROM users WHERE id = ?");
+			prepareStatement.setLong(1, userId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			if (resultSet.next()) {
+				result = resultSet.getString(1);
+			}
+			return result.equals(encryptPassword(wachtwoord));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	private static String encryptPassword(String password)
+	{
+	    String sha1 = "";
+	    try
+	    {
+	        MessageDigest crypt = MessageDigest.getInstance("SHA-1");
+	        crypt.reset();
+	        crypt.update(password.getBytes("UTF-8"));
+	        sha1 = byteToHex(crypt.digest());
+	    }
+	    catch(NoSuchAlgorithmException e)
+	    {
+	        e.printStackTrace();
+	    }
+	    catch(UnsupportedEncodingException e)
+	    {
+	        e.printStackTrace();
+	    }
+	    return sha1;
+	}
+
+	private static String byteToHex(final byte[] hash)
+	{
+	    Formatter formatter = new Formatter();
+	    for (byte b : hash)
+	    {
+	        formatter.format("%02x", b);
+	    }
+	    String result = formatter.toString();
+	    formatter.close();
+	    return result;
+	}
+
 	// private DBManager manager = DBManager.getInstance();
 	//
 	// private final static String PARTIJ_INSERT =
