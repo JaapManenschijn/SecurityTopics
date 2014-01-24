@@ -35,7 +35,7 @@ public class DBBuilder {
 				"DROP TABLE vakken", "DROP TABLE users", "DROP TABLE rol",
 				"DROP TABLE permissie", "DROP TABLE toetsuitslag",
 				"DROP TABLE vak_klas", "DROP TABLE leerling_klas",
-				"DROP TABLE rol_permissie" };
+				"DROP TABLE rol_permissie", "DROP TABLE user_rol" };
 
 		for (String statement : statements) {
 			PreparedStatement prepareStatement = manager
@@ -151,7 +151,19 @@ public class DBBuilder {
 						+ //
 						"CONSTRAINT fk_rol foreign key (rol_id) references rol (id),"
 						+ //
-						"CONSTRAINT fk_permissie foreign key (permissie_id) references permissie (id))"
+						"CONSTRAINT fk_permissie foreign key (permissie_id) references permissie (id))",
+
+				"CREATE TABLE user_rol ("
+						+ //
+						"user_id BIGINT NOT NULL,"
+						+ //
+						"rol_id BIGINT NOT NULL,"
+						+ //
+						"CONSTRAINT pk_userrol PRIMARY KEY (user_id, rol_id),"
+						+ //
+						"CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users(id),"
+						+ //
+						"CONSTRAINT rol_fk FOREIGN KEY (rol_id) REFERENCES rol(id))"
 
 		};
 

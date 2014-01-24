@@ -6,7 +6,11 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
+
+import nl.saxion.act.security.model.Klas;
 
 public class Dao {
 
@@ -22,7 +26,7 @@ public class Dao {
 		}
 		return instance;
 	}
-	
+
 	public boolean getCijfersVanStudentVanVak(long userId, String wachtwoord) {
 		String result = "";
 		try {
@@ -58,40 +62,142 @@ public class Dao {
 			return false;
 		}
 	}
-	
-	private static String encryptPassword(String password)
-	{
-	    String sha1 = "";
-	    try
-	    {
-	        MessageDigest crypt = MessageDigest.getInstance("SHA-1");
-	        crypt.reset();
-	        crypt.update(password.getBytes("UTF-8"));
-	        sha1 = byteToHex(crypt.digest());
-	    }
-	    catch(NoSuchAlgorithmException e)
-	    {
-	        e.printStackTrace();
-	    }
-	    catch(UnsupportedEncodingException e)
-	    {
-	        e.printStackTrace();
-	    }
-	    return sha1;
+
+	private static String encryptPassword(String password) {
+		String sha1 = "";
+		try {
+			MessageDigest crypt = MessageDigest.getInstance("SHA-1");
+			crypt.reset();
+			crypt.update(password.getBytes("UTF-8"));
+			sha1 = byteToHex(crypt.digest());
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return sha1;
 	}
 
-	private static String byteToHex(final byte[] hash)
-	{
-	    Formatter formatter = new Formatter();
-	    for (byte b : hash)
-	    {
-	        formatter.format("%02x", b);
-	    }
-	    String result = formatter.toString();
-	    formatter.close();
-	    return result;
+	private static String byteToHex(final byte[] hash) {
+		Formatter formatter = new Formatter();
+		for (byte b : hash) {
+			formatter.format("%02x", b);
+		}
+		String result = formatter.toString();
+		formatter.close();
+		return result;
 	}
 
+	public void addUser(String naam, String wachtwoord) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("INSERT INTO users VALUES (?,?)");
+			prepareStatement.setString(1, naam);
+			prepareStatement.setString(2, encryptPassword(wachtwoord));
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void addRol(String naam) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("INSERT INTO rol VALUES (?)");
+			prepareStatement.setString(1, naam);
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void addPermissie(String naam) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("INSERT INTO permissie VALUES (?)");
+			prepareStatement.setString(1, naam);
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setPermissieBijRol(long rol_id, long permissie_id) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("INSERT INTO rol_permissie VALUES (?,?)");
+			prepareStatement.setLong(1, rol_id);
+			prepareStatement.setLong(2, permissie_id);
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setRolBijUser(long user_id, long rol_id) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("INSERT INTO user_rol VALUES (?,?)");
+			prepareStatement.setLong(1, user_id);
+			prepareStatement.setLong(2, rol_id);
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void addKlas(String naam) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("INSERT INTO klassen VALUES (?)");
+			prepareStatement.setString(1, naam);
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public List<Klas> getKlassenVanDocent(long docent_id) {
+		List<Klas> klassenVanDocent = new ArrayList<Klas>();
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT id FROM vakken WHERE docent_id = ?");
+			PreparedStatement vakklasStatement = manager
+					.prepareStatement("SELECT klas_id FROM klassen WHERE vak_id = ?");
+			prepareStatement.setLong(1, docent_id);
+			ResultSet resultSet = prepareStatement.executeQuery();
+			while (resultSet.next()) {
+				long vakId = resultSet.getLong(1);
+				vakklasStatement.setLong(1, vakId);
+
+				ResultSet klasIds = vakklasStatement.executeQuery();
+				while (klasIds.next()) {
+					long klasId = klasIds.getLong(1);
+					klassenVanDocent.add(getKlas(klasId));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return klassenVanDocent;
+	}
+
+	public Klas getKlas(long klas_id) {
+		Klas klas = null;
+		try {
+			PreparedStatement klasStatement = manager
+					.prepareStatement("SELECT * FROM klassen WHERE id = ?");
+			klasStatement.setLong(1, klas_id);
+
+			ResultSet klasResult = klasStatement.executeQuery();
+			if (klasResult.next()) {
+				klas = new Klas(klasResult.getLong(1), klasResult.getString(2));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return klas;
+	}
 	// private DBManager manager = DBManager.getInstance();
 	//
 	// private final static String PARTIJ_INSERT =
