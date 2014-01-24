@@ -52,10 +52,9 @@ public class TabbedPanel extends JPanel {
 				return 35;
 			}
 		});
-		JLabel naamLabel = new JLabel("Welkom " + user.getNaam(),
-				SwingConstants.RIGHT);
-		naamLabel.setBorder(new EmptyBorder(10, 5, 5, 20));
-		add(naamLabel, BorderLayout.NORTH);
+		NaamPanel npanel = new NaamPanel(frame, user);
+		npanel.setBorder(new EmptyBorder(10, 5, 5, 20));
+		add(npanel, BorderLayout.NORTH);
 		add(tabbedPane, BorderLayout.CENTER);
 	}
 
