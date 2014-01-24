@@ -35,17 +35,4 @@ public class Rol {
 	public List<Permissie> getPermissies() {
 		return permissies;
 	}
-
-	public boolean isStudent() {
-		return naam.equals("student");
-	}
-
-	public boolean isDocent() {
-		return naam.equals("docent");
-	}
-
-	public boolean isSuperUser() {
-		return naam.equals("beheerder");
-	}
-
 }

@@ -12,6 +12,7 @@ import java.util.List;
 
 import nl.saxion.act.security.model.Klas;
 import nl.saxion.act.security.model.Vak;
+import nl.saxion.act.security.rbac.Rol;
 import nl.saxion.act.security.rbac.User;
 
 public class Dao {
@@ -41,6 +42,42 @@ public class Dao {
 		}
 	}
 
+	public List<Rol> getRollen(long userId) {
+		List<Rol> rollen = new ArrayList<Rol>();
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT rol_id FROM user_rol WHERE user_id = ?");
+			prepareStatement.setLong(1, userId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				rollen.add(getRol(resultSet.getLong(1)));
+			}
+			return rollen;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return rollen;
+		}
+	}
+
+	public Rol getRol(long rolId) {
+		Rol rol = null;
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT * FROM rol WHERE id = ?");
+			prepareStatement.setLong(1, rolId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			if (resultSet.next()) {
+				rol = new Rol(resultSet.getLong(1), resultSet.getString(2));
+			}
+			return rol;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return rol;
+		}
+	}
+
 	public User getUser(long userId) {
 		User user = null;
 		try {
@@ -51,6 +88,7 @@ public class Dao {
 
 			if (resultSet.next()) {
 				user = new User(resultSet.getLong(1), resultSet.getString(2));
+				user.setRollen(getRollen(userId));
 			}
 			return user;
 		} catch (SQLException e) {

@@ -25,7 +25,7 @@ public class TabbedPanel extends JPanel {
 		CijferOverzichtPanel coPanel = new CijferOverzichtPanel();
 		tabbedPane.addTab("Cijfer overzicht", coPanel);
 
-		if (user.getRol().isDocent() || user.getRol().isSuperUser()) {
+		if (user.isDocent() || user.isSuperUser()) {
 
 			KlasPanel klasPanel = new KlasPanel();
 			tabbedPane.addTab("Klas overzicht", klasPanel);
@@ -37,7 +37,7 @@ public class TabbedPanel extends JPanel {
 			tabbedPane.addTab("Toets overzicht", toetsPanel);
 		}
 
-		if (user.getRol().isSuperUser()) {
+		if (user.isSuperUser()) {
 			DocentPanel docentPanel = new DocentPanel();
 			tabbedPane.addTab("Docent overzicht", docentPanel);
 
