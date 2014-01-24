@@ -13,32 +13,37 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import nl.saxion.act.security.rbac.User;
 
 public class TabbedPanel extends JPanel {
-	
+
 	private JFrame frame;
 
 	public TabbedPanel(User user, JFrame frame) {
 		setLayout(new BorderLayout());
 		this.frame = frame;
-		
+
 		JTabbedPane tabbedPane = new JTabbedPane();
 
 		CijferOverzichtPanel coPanel = new CijferOverzichtPanel();
 		tabbedPane.addTab("Cijfer overzicht", coPanel);
 
-		KlasPanel klasPanel = new KlasPanel();
-		tabbedPane.addTab("Klas overzicht", klasPanel);
+		if (user.getRol().isDocent() || user.getRol().isSuperUser()) {
 
-		VakPanel vakPanel = new VakPanel();
-		tabbedPane.addTab("Vak overzicht", vakPanel);
+			KlasPanel klasPanel = new KlasPanel();
+			tabbedPane.addTab("Klas overzicht", klasPanel);
 
-		ToetsPanel toetsPanel = new ToetsPanel();
-		tabbedPane.addTab("Toets overzicht", toetsPanel);
+			VakPanel vakPanel = new VakPanel();
+			tabbedPane.addTab("Vak overzicht", vakPanel);
 
-		DocentPanel docentPanel = new DocentPanel();
-		tabbedPane.addTab("Docent overzicht", docentPanel);
+			ToetsPanel toetsPanel = new ToetsPanel();
+			tabbedPane.addTab("Toets overzicht", toetsPanel);
+		}
 
-		RechtenPanel rechtenPanel = new RechtenPanel();
-		tabbedPane.addTab("Rechten & Permissies", rechtenPanel);
+		if (user.getRol().isSuperUser()) {
+			DocentPanel docentPanel = new DocentPanel();
+			tabbedPane.addTab("Docent overzicht", docentPanel);
+
+			RechtenPanel rechtenPanel = new RechtenPanel();
+			tabbedPane.addTab("Rechten & Permissies", rechtenPanel);
+		}
 
 		tabbedPane.setUI(new BasicTabbedPaneUI() {
 			@Override
