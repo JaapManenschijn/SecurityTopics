@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
+import nl.saxion.act.security.model.Vak;
+import nl.saxion.act.security.rbac.User;
+
 import nl.saxion.act.security.model.Klas;
 
 public class Dao {
@@ -27,21 +30,133 @@ public class Dao {
 		return instance;
 	}
 
-	public boolean getCijfersVanStudentVanVak(long userId, String wachtwoord) {
-		String result = "";
+	public void addVak(String naam, long docentId) {
 		try {
 			PreparedStatement prepareStatement = manager
-					.prepareStatement("SELECT wachtwoord FROM users WHERE id = ?");
+					.prepareStatement("INSERT INTO vakken VALUES (?, ?)");
+			prepareStatement.setString(1, naam);
+			prepareStatement.setLong(2, docentId);
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	public User getUser(long userId) {
+		User user = null;
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT * FROM users WHERE id = ?");
 			prepareStatement.setLong(1, userId);
 			ResultSet resultSet = prepareStatement.executeQuery();
 
 			if (resultSet.next()) {
-				result = resultSet.getString(1);
+				user = new User(resultSet.getLong(1), resultSet.getString(2));
 			}
-			return result.equals(encryptPassword(wachtwoord));
+			return user;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
+			return user;
+		}
+	}
+
+	public List<Vak> getVakkenVanStudent(long studentId) {
+		List<Vak> vakken = new ArrayList<Vak>();
+		List<Long> klasIds = new ArrayList<Long>();
+		List<Long> vakIds = new ArrayList<Long>();
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT klas_id FROM leerling_klas WHERE leerling_id = ?");
+			prepareStatement.setLong(1, studentId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				klasIds.add(resultSet.getLong(1));
+			}
+			PreparedStatement prepareStatement2 = manager
+					.prepareStatement("SELECT vak_id FROM vak_klas WHERE klas_id = ?");
+			for (Long klasId : klasIds) {
+				prepareStatement2.setLong(1, klasId);
+				ResultSet resultSet2 = prepareStatement2.executeQuery();
+
+				while (resultSet2.next()) {
+					vakIds.add(resultSet2.getLong(1));
+				}
+			}
+
+			PreparedStatement prepareStatement3 = manager
+					.prepareStatement("SELECT * FROM vakken WHERE vak_id = ?");
+			for (Long vakId : vakIds) {
+				prepareStatement3.setLong(1, vakId);
+				ResultSet resultSet3 = prepareStatement2.executeQuery();
+
+				while (resultSet3.next()) {
+					Vak vak = new Vak(resultSet3.getLong(1),
+							resultSet3.getString(2));
+					User user = getUser(resultSet3.getLong(3));
+					vak.setDocent(user);
+					vakken.add(vak);
+				}
+			}
+			return vakken;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return vakken;
+		}
+	}
+
+	public void addToets(long vakId) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("INSERT INTO toetsen VALUES (?)");
+			prepareStatement.setLong(1, vakId);
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void addCijferBijStudent(long toetsId, long studentId, double cijfer) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("INSERT INTO toetsuitslag VALUES (?,?,?)");
+			prepareStatement.setLong(1, toetsId);
+			prepareStatement.setLong(2, studentId);
+			prepareStatement.setDouble(3, cijfer);
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public double getCijferVanStudentVanVak(long vakId, long studentId) {
+		long toetsId = 0;
+		double cijfer = 0.0;
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT toets_id FROM toetsen WHERE vak_id = ?");
+			prepareStatement.setLong(1, vakId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			if (resultSet.next()) {
+				toetsId = resultSet.getLong(1);
+			}
+
+			PreparedStatement prepareStatement2 = manager
+					.prepareStatement("SELECT cijfer FROM toetsuitslag WHERE toets_id = ? AND leerling_id = ?");
+			prepareStatement2.setLong(1, toetsId);
+			prepareStatement2.setLong(2, studentId);
+			ResultSet resultSet2 = prepareStatement2.executeQuery();
+
+			if (resultSet2.next()) {
+				cijfer = resultSet2.getDouble(1);
+			}
+			return cijfer;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return cijfer;
 		}
 	}
 
