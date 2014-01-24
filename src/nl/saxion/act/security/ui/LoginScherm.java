@@ -13,6 +13,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import nl.saxion.act.security.db.Dao;
+import nl.saxion.act.security.rbac.Sessie;
 
 public class LoginScherm extends JPanel {
 	private JTextField textField;
@@ -60,13 +61,13 @@ public class LoginScherm extends JPanel {
 					JOptionPane.showMessageDialog(null,
 							"Een usernummer moet alleen uit cijfers bestaan!",
 							"Ongeldige user", JOptionPane.ERROR_MESSAGE);
-					return;					
+					return;
 				}
 				if (Dao.getInstance().checkLogin(userId, wachtwoord)) {
+					Sessie.setIngelogdeGebruiker(Dao.getInstance().getUser(
+							userId));
 					frame.getContentPane().removeAll();
-					frame.getContentPane().add(
-							new TabbedPanel(Dao.getInstance().getUser(userId),
-									frame));
+					frame.getContentPane().add(new TabbedPanel(frame));
 					frame.revalidate();
 					frame.repaint();
 				} else {

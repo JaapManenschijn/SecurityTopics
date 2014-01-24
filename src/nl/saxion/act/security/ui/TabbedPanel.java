@@ -3,20 +3,18 @@ package nl.saxion.act.security.ui;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
-import nl.saxion.act.security.rbac.User;
+import nl.saxion.act.security.rbac.Sessie;
 
 public class TabbedPanel extends JPanel {
 
 	private JFrame frame;
 
-	public TabbedPanel(User user, JFrame frame) {
+	public TabbedPanel(JFrame frame) {
 		setLayout(new BorderLayout());
 		this.frame = frame;
 
@@ -25,7 +23,8 @@ public class TabbedPanel extends JPanel {
 		CijferOverzichtPanel coPanel = new CijferOverzichtPanel();
 		tabbedPane.addTab("Cijfer overzicht", coPanel);
 
-		if (user.isDocent() || user.isSuperUser()) {
+		if (Sessie.getIngelogdeGebruiker().isDocent()
+				|| Sessie.getIngelogdeGebruiker().isSuperUser()) {
 
 			KlasPanel klasPanel = new KlasPanel();
 			tabbedPane.addTab("Klas overzicht", klasPanel);
@@ -37,7 +36,7 @@ public class TabbedPanel extends JPanel {
 			tabbedPane.addTab("Toets overzicht", toetsPanel);
 		}
 
-		if (user.isSuperUser()) {
+		if (Sessie.getIngelogdeGebruiker().isSuperUser()) {
 			DocentPanel docentPanel = new DocentPanel();
 			tabbedPane.addTab("Docent overzicht", docentPanel);
 
@@ -52,7 +51,7 @@ public class TabbedPanel extends JPanel {
 				return 35;
 			}
 		});
-		NaamPanel npanel = new NaamPanel(frame, user);
+		NaamPanel npanel = new NaamPanel(frame);
 		npanel.setBorder(new EmptyBorder(10, 5, 5, 20));
 		add(npanel, BorderLayout.NORTH);
 		add(tabbedPane, BorderLayout.CENTER);
