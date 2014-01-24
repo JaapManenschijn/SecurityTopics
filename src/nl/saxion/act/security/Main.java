@@ -50,6 +50,10 @@ public class Main {
 		dao.addPermissie("beheerder");
 		dao.addPermissie("docent");
 		dao.addPermissie("student");
+
+		dao.setRolBijUser(1, 1);
+		dao.setRolBijUser(2, 2);
+		dao.setRolBijUser(3, 3);
 	}
 
 }
