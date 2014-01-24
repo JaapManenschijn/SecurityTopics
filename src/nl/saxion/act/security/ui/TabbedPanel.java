@@ -2,6 +2,7 @@ package nl.saxion.act.security.ui;
 
 import java.awt.BorderLayout;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -12,9 +13,13 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import nl.saxion.act.security.rbac.User;
 
 public class TabbedPanel extends JPanel {
+	
+	private JFrame frame;
 
-	public TabbedPanel(User user) {
+	public TabbedPanel(User user, JFrame frame) {
 		setLayout(new BorderLayout());
+		this.frame = frame;
+		
 		JTabbedPane tabbedPane = new JTabbedPane();
 
 		CijferOverzichtPanel coPanel = new CijferOverzichtPanel();

@@ -4,14 +4,13 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 
-import nl.saxion.act.security.rbac.User;
-import nl.saxion.act.security.ui.TabbedPanel;
+import nl.saxion.act.security.ui.LoginScherm;
 
 public class Main {
 
 	private JFrame frame;
-	
-	public Main(){
+
+	public Main() {
 		frame = new JFrame();
 		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -20,13 +19,13 @@ public class Main {
 		frame.setFocusable(true);
 		frame.requestFocus();
 	}
-	
-	public void start(){
-		frame.getContentPane().add(new TabbedPanel(new User(1, "Testaccount")),BorderLayout.CENTER);
+
+	public void start() {
+		frame.getContentPane().add(new LoginScherm(frame), BorderLayout.CENTER);
 		frame.revalidate();
 		frame.repaint();
 	}
-	
+
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.start();
