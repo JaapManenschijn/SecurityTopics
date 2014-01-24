@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 
+import nl.saxion.act.security.ui.LoginScherm;
 import nl.saxion.act.security.db.DBBuilder;
 import nl.saxion.act.security.db.Dao;
 import nl.saxion.act.security.rbac.User;
@@ -24,8 +25,7 @@ public class Main {
 	}
 
 	public void start() {
-		frame.getContentPane().add(new TabbedPanel(new User(1, "Testaccount")),
-				BorderLayout.CENTER);
+		frame.getContentPane().add(new LoginScherm(frame), BorderLayout.CENTER);
 		frame.revalidate();
 		frame.repaint();
 	}
