@@ -54,6 +54,10 @@ public class Main {
 		dao.setRolBijUser(1, 1);
 		dao.setRolBijUser(2, 2);
 		dao.setRolBijUser(3, 3);
+		
+		//TODO Permissies toevoegen
+		
+		dao.setPermissieMap();
 	}
 
 }

@@ -8,10 +8,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import nl.saxion.act.security.model.Klas;
 import nl.saxion.act.security.model.Vak;
+import nl.saxion.act.security.rbac.Permissie;
+import nl.saxion.act.security.rbac.PermissieHelper;
 import nl.saxion.act.security.rbac.Rol;
 import nl.saxion.act.security.rbac.User;
 
@@ -28,6 +32,22 @@ public class Dao {
 			instance = new Dao();
 		}
 		return instance;
+	}
+	
+	public void setPermissieMap(){
+		Map<String, Permissie> permissies = new HashMap<String, Permissie>();
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT * FROM permissie");
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				permissies.put(resultSet.getString(2), new Permissie(resultSet.getLong(1), resultSet.getString(2)));
+			}
+			PermissieHelper.permissies = permissies;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void addVak(String naam, long docentId) {
