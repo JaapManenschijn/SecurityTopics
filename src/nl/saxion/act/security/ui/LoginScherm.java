@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import nl.saxion.act.security.db.Dao;
@@ -34,7 +35,7 @@ public class LoginScherm extends JPanel {
 		lblUserid.setBounds(60, 86, 56, 16);
 		add(lblUserid);
 
-		textField_1 = new JTextField();
+		textField_1 = new JPasswordField();
 		textField_1.setColumns(10);
 		textField_1.setBounds(235, 118, 154, 22);
 		add(textField_1);
@@ -59,12 +60,15 @@ public class LoginScherm extends JPanel {
 					JOptionPane.showMessageDialog(null,
 							"Een usernummer moet alleen uit cijfers bestaan!",
 							"Ongeldige user", JOptionPane.ERROR_MESSAGE);
+					return;					
 				}
 				if (Dao.getInstance().checkLogin(userId, wachtwoord)) {
 					frame.getContentPane().removeAll();
 					frame.getContentPane().add(
 							new TabbedPanel(Dao.getInstance().getUser(userId),
 									frame));
+					frame.revalidate();
+					frame.repaint();
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"De ingevoerde combinatie is onjuist.",
