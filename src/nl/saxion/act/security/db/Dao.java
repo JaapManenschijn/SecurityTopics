@@ -33,8 +33,8 @@ public class Dao {
 		}
 		return instance;
 	}
-	
-	public void setPermissieMap(){
+
+	public void setPermissieMap() {
 		Map<String, Permissie> permissies = new HashMap<String, Permissie>();
 		try {
 			PreparedStatement prepareStatement = manager
@@ -42,7 +42,10 @@ public class Dao {
 			ResultSet resultSet = prepareStatement.executeQuery();
 
 			while (resultSet.next()) {
-				permissies.put(resultSet.getString(2), new Permissie(resultSet.getLong(1), resultSet.getString(2)));
+				permissies.put(
+						resultSet.getString(2),
+						new Permissie(resultSet.getLong(1), resultSet
+								.getString(2)));
 			}
 			PermissieHelper.permissies = permissies;
 		} catch (SQLException e) {
@@ -142,10 +145,10 @@ public class Dao {
 			}
 
 			PreparedStatement prepareStatement3 = manager
-					.prepareStatement("SELECT * FROM vakken WHERE vak_id = ?");
+					.prepareStatement("SELECT * FROM vakken WHERE id = ?");
 			for (Long vakId : vakIds) {
 				prepareStatement3.setLong(1, vakId);
-				ResultSet resultSet3 = prepareStatement2.executeQuery();
+				ResultSet resultSet3 = prepareStatement3.executeQuery();
 
 				while (resultSet3.next()) {
 					Vak vak = new Vak(resultSet3.getLong(1),
@@ -375,5 +378,29 @@ public class Dao {
 			e.printStackTrace();
 		}
 		return klas;
+	}
+
+	public void addLeerlingAanKlas(long leerling_id, long klas_id) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("INSERT INTO leerling_klas VALUES (?,?)");
+			prepareStatement.setLong(1, leerling_id);
+			prepareStatement.setLong(2, klas_id);
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void addKlasAanVak(long klasId, long vakId) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("INSERT INTO vak_klas VALUES (?,?)");
+			prepareStatement.setLong(1, vakId);
+			prepareStatement.setLong(2, klasId);
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }

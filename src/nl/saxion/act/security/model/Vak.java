@@ -29,4 +29,8 @@ public class Vak {
 	public String getNaam() {
 		return naam;
 	}
+
+	public String toString() {
+		return naam;
+	}
 }
