@@ -16,7 +16,7 @@ public class Klas {
 	}
 	
 	public void addStudent(User user){
-		if(user.getRol().isStudent()){
+		if(user.isStudent()){
 			if(!leerlingen.contains(user)){
 				leerlingen.add(user);
 			}

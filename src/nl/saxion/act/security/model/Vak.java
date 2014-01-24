@@ -17,7 +17,7 @@ public class Vak {
 	}
 
 	public void setDocent(User user) {
-		if (user.getRol().isDocent()) {
+		if (user.isDocent()) {
 			this.docent = user;
 		}
 	}

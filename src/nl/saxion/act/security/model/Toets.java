@@ -17,7 +17,7 @@ public class Toets {
 	}
 	
 	public void addUitslag(User user, double cijfer){
-		assert(user.getRol().isStudent());
+		assert(user.isStudent());
 		assert(cijfer >= 1.0 && cijfer <= 10.0 );
 		uitslagen.put(user, cijfer);
 	}
