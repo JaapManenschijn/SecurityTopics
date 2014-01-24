@@ -4,11 +4,9 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 
-import nl.saxion.act.security.ui.LoginScherm;
 import nl.saxion.act.security.db.DBBuilder;
 import nl.saxion.act.security.db.Dao;
-import nl.saxion.act.security.rbac.User;
-import nl.saxion.act.security.ui.TabbedPanel;
+import nl.saxion.act.security.ui.LoginScherm;
 
 public class Main {
 
@@ -32,10 +30,11 @@ public class Main {
 
 	public static void main(String[] args) {
 		Main main = new Main();
+		initApplication();
 		main.start();
 	}
 
-	private void initApplication() {
+	private static void initApplication() {
 		try {
 			DBBuilder.getInstance().createDatabase();
 		} catch (Exception e) {

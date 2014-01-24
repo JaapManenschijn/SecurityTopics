@@ -32,7 +32,7 @@ public class Dao {
 	public void addVak(String naam, long docentId) {
 		try {
 			PreparedStatement prepareStatement = manager
-					.prepareStatement("INSERT INTO vakken VALUES (?, ?)");
+					.prepareStatement("INSERT INTO vakken (naam, docent_id) VALUES (?, ?)");
 			prepareStatement.setString(1, naam);
 			prepareStatement.setLong(2, docentId);
 			prepareStatement.execute();
@@ -107,7 +107,7 @@ public class Dao {
 	public void addToets(long vakId) {
 		try {
 			PreparedStatement prepareStatement = manager
-					.prepareStatement("INSERT INTO toetsen VALUES (?)");
+					.prepareStatement("INSERT INTO toetsen (vak_id) VALUES (?)");
 			prepareStatement.setLong(1, vakId);
 			prepareStatement.execute();
 		} catch (SQLException e) {
@@ -118,7 +118,7 @@ public class Dao {
 	public void addCijferBijStudent(long toetsId, long studentId, double cijfer) {
 		try {
 			PreparedStatement prepareStatement = manager
-					.prepareStatement("INSERT INTO toetsuitslag VALUES (?,?,?)");
+					.prepareStatement("INSERT INTO toetsuitslag (toets_id, leerling_id, cijfer) VALUES (?,?,?)");
 			prepareStatement.setLong(1, toetsId);
 			prepareStatement.setLong(2, studentId);
 			prepareStatement.setDouble(3, cijfer);
@@ -204,7 +204,7 @@ public class Dao {
 	public void addUser(String naam, String wachtwoord) {
 		try {
 			PreparedStatement prepareStatement = manager
-					.prepareStatement("INSERT INTO users VALUES (?,?)");
+					.prepareStatement("INSERT INTO users (naam, wachtwoord) VALUES (?,?)");
 			prepareStatement.setString(1, naam);
 			prepareStatement.setString(2, encryptPassword(wachtwoord));
 			prepareStatement.execute();
@@ -216,7 +216,7 @@ public class Dao {
 	public void addRol(String naam) {
 		try {
 			PreparedStatement prepareStatement = manager
-					.prepareStatement("INSERT INTO rol VALUES (?)");
+					.prepareStatement("INSERT INTO rol (naam) VALUES (?)");
 			prepareStatement.setString(1, naam);
 			prepareStatement.execute();
 		} catch (SQLException e) {
@@ -227,7 +227,7 @@ public class Dao {
 	public void addPermissie(String naam) {
 		try {
 			PreparedStatement prepareStatement = manager
-					.prepareStatement("INSERT INTO permissie VALUES (?)");
+					.prepareStatement("INSERT INTO permissie (naam) VALUES (?)");
 			prepareStatement.setString(1, naam);
 			prepareStatement.execute();
 		} catch (SQLException e) {
@@ -262,7 +262,7 @@ public class Dao {
 	public void addKlas(String naam) {
 		try {
 			PreparedStatement prepareStatement = manager
-					.prepareStatement("INSERT INTO klassen VALUES (?)");
+					.prepareStatement("INSERT INTO klassen (naam) VALUES (?)");
 			prepareStatement.setString(1, naam);
 			prepareStatement.execute();
 		} catch (SQLException e) {

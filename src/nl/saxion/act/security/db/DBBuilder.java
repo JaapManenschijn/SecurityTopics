@@ -31,11 +31,12 @@ public class DBBuilder {
 	 */
 	public void cleanDatabase() {
 		System.out.println("Dropping all tables");
-		String[] statements = { "DROP TABLE klassen", "DROP TABLE toetsen",
-				"DROP TABLE vakken", "DROP TABLE users", "DROP TABLE rol",
-				"DROP TABLE permissie", "DROP TABLE toetsuitslag",
+		String[] statements = { "DROP TABLE toetsuitslag",
 				"DROP TABLE vak_klas", "DROP TABLE leerling_klas",
-				"DROP TABLE rol_permissie", "DROP TABLE user_rol" };
+				"DROP TABLE rol_permissie", "DROP TABLE user_rol",
+				"DROP TABLE klassen", "DROP TABLE toetsen",
+				"DROP TABLE vakken", "DROP TABLE users", "DROP TABLE rol",
+				"DROP TABLE permissie" };
 
 		for (String statement : statements) {
 			PreparedStatement prepareStatement = manager
