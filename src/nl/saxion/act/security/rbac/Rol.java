@@ -35,26 +35,17 @@ public class Rol {
 	public List<Permissie> getPermissies() {
 		return permissies;
 	}
-	
-	public boolean isStudent(){
-		if(id == 1){
-			return true;
-		}
-		return false;
+
+	public boolean isStudent() {
+		return naam.equals("student");
 	}
-	
-	public boolean isDocent(){
-		if(id == 2){
-			return true;
-		}
-		return false;
+
+	public boolean isDocent() {
+		return naam.equals("docent");
 	}
-	
-	public boolean isSuperUser(){
-		if(id == 3){
-			return true;
-		}
-		return false;
+
+	public boolean isSuperUser() {
+		return naam.equals("beheerder");
 	}
 
 }

@@ -46,6 +46,10 @@ public class Main {
 		dao.addUser("superuser", "superuser");
 		dao.addUser("docent", "docent");
 		dao.addUser("leerling", "leerling");
+
+		dao.addPermissie("beheerder");
+		dao.addPermissie("docent");
+		dao.addPermissie("student");
 	}
 
 }
