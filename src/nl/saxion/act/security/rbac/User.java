@@ -56,4 +56,15 @@ public class User {
 		}
 		return false;
 	}
+
+	public boolean heeftPermissie(Permissie permissie) {
+		for (Rol rol : rollen) {
+			for (Permissie p : rol.getPermissies()) {
+				if (p.equals(permissie)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

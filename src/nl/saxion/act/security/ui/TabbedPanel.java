@@ -3,9 +3,12 @@ package nl.saxion.act.security.ui;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 import nl.saxion.act.security.rbac.Sessie;
@@ -14,7 +17,7 @@ public class TabbedPanel extends JPanel {
 
 	private JFrame frame;
 
-	public TabbedPanel(JFrame frame) {
+	public TabbedPanel(final JFrame frame) {
 		setLayout(new BorderLayout());
 		this.frame = frame;
 
@@ -49,6 +52,19 @@ public class TabbedPanel extends JPanel {
 			protected int calculateTabHeight(int tabPlacement, int tabIndex,
 					int fontHeight) {
 				return 35;
+			}
+		});
+		tabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if(Sessie.getIngelogdeGebruiker() == null){
+					JOptionPane.showMessageDialog(null,
+							"De sessie is verlopen, u wordt teruggebracht naar het loginscherm.",
+							"Sessie verlopen", JOptionPane.ERROR_MESSAGE);
+					frame.removeAll();
+					frame.getContentPane().add(new LoginScherm(frame));
+					frame.revalidate();
+					frame.repaint();
+				}
 			}
 		});
 		NaamPanel npanel = new NaamPanel(frame);
