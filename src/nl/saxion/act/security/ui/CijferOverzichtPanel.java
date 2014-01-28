@@ -24,17 +24,21 @@ public class CijferOverzichtPanel extends JPanel {
 
 		JList list = new JList(vakLijst);
 		list.addMouseListener(new MouseAdapter() {
-		    public void mouseClicked(MouseEvent evt) {
-		        JList list = (JList)evt.getSource();
-		        if (evt.getClickCount() == 1) {
-		            int index = list.locationToIndex(evt.getPoint());
-		            Vak vak = vakLijst.get(index);
-		            double cijfer = Dao.getInstance().getCijferVanStudentVanVak(vak.getId(), Sessie.getIngelogdeGebruiker().getId());
-		            cijferPanel.setVak(vak.getNaam());
-		            cijferPanel.setCijfer("" + cijfer);
-		            cijferPanel.setDocent(vak.getDocent().getNaam());
-		        }
-		    }
+			public void mouseClicked(MouseEvent evt) {
+				JList list = (JList) evt.getSource();
+				if (evt.getClickCount() == 1) {
+					int index = list.locationToIndex(evt.getPoint());
+					if (index < vakLijst.size() && index >= 0) {
+						Vak vak = vakLijst.get(index);
+						double cijfer = Dao.getInstance()
+								.getCijferVanStudentVanVak(vak.getId(),
+										Sessie.getIngelogdeGebruiker().getId());
+						cijferPanel.setVak(vak.getNaam());
+						cijferPanel.setCijfer("" + cijfer);
+						cijferPanel.setDocent(vak.getDocent().getNaam());
+					}
+				}
+			}
 		});
 		add(list, BorderLayout.WEST);
 		list.setPreferredSize(new Dimension(250, 500));
