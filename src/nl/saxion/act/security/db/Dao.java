@@ -54,6 +54,27 @@ public class Dao {
 		}
 	}
 
+	public List<Rol> getAlleRollen() {
+		List<Rol> rollen = new ArrayList<Rol>();
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT * FROM rol");
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				Rol rol = new Rol(resultSet.getLong(1), resultSet.getString(2));
+				for (Permissie p : getPermissiesVanRol(rol.getId())) {
+					rol.addPermissie(p);
+				}
+				rollen.add(rol);
+			}
+			return rollen;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return rollen;
+		}
+	}
+
 	public void addVak(String naam, long docentId) {
 		try {
 			PreparedStatement prepareStatement = manager
@@ -187,15 +208,8 @@ public class Dao {
 				klasIds.add(resultSet.getLong(1));
 			}
 
-			PreparedStatement prepareStatement3 = manager
-					.prepareStatement("SELECT * FROM klassen WHERE id = ?");
 			for (Long klasId : klasIds) {
-				prepareStatement3.setLong(1, klasId);
-				ResultSet resultSet3 = prepareStatement3.executeQuery();
-
-				while (resultSet3.next()) {
-					klassen.add(getKlas(klasId));
-				}
+				klassen.add(getKlas(klasId));
 			}
 			return klassen;
 		} catch (SQLException e) {
@@ -222,6 +236,28 @@ public class Dao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return toetsen;
+		}
+	}
+
+	public List<User> getUsers(long rolId) {
+		List<User> users = new ArrayList<User>();
+		List<Long> userIds = new ArrayList<Long>();
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT user_id FROM user_rol WHERE rol_id = ?");
+			prepareStatement.setLong(1, rolId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				userIds.add(resultSet.getLong(1));
+			}
+			for (Long userId : userIds) {
+				users.add(getUser(userId));
+			}
+			return users;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return users;
 		}
 	}
 
@@ -290,20 +326,8 @@ public class Dao {
 					vakIds.add(resultSet2.getLong(1));
 				}
 			}
-
-			PreparedStatement prepareStatement3 = manager
-					.prepareStatement("SELECT * FROM vakken WHERE id = ?");
 			for (Long vakId : vakIds) {
-				prepareStatement3.setLong(1, vakId);
-				ResultSet resultSet3 = prepareStatement3.executeQuery();
-
-				while (resultSet3.next()) {
-					Vak vak = new Vak(resultSet3.getLong(1),
-							resultSet3.getString(2));
-					User user = getUser(resultSet3.getLong(3));
-					vak.setDocent(user);
-					vakken.add(vak);
-				}
+				vakken.add(getVak(vakId));
 			}
 			return vakken;
 		} catch (SQLException e) {
