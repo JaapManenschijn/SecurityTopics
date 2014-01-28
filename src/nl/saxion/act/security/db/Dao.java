@@ -225,6 +225,28 @@ public class Dao {
 		}
 	}
 
+	public List<User> getUsers(long rolId) {
+		List<User> users = new ArrayList<User>();
+		List<Long> userIds = new ArrayList<Long>();
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT user_id FROM user_rol WHERE rol_id = ?");
+			prepareStatement.setLong(1, rolId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				userIds.add(resultSet.getLong(1));
+			}
+			for (Long userId : userIds) {
+				users.add(getUser(userId));
+			}
+			return users;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return users;
+		}
+	}
+
 	public Vak getVak(long vakId) {
 		Vak vak = null;
 		try {

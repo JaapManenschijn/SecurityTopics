@@ -35,4 +35,8 @@ public class Rol {
 	public List<Permissie> getPermissies() {
 		return permissies;
 	}
+
+	public String toString() {
+		return naam;
+	}
 }

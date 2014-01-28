@@ -40,8 +40,8 @@ public class TabbedPanel extends JPanel {
 		}
 
 		if (Sessie.getIngelogdeGebruiker().isSuperUser()) {
-			DocentPanel docentPanel = new DocentPanel();
-			tabbedPane.addTab("Docent overzicht", docentPanel);
+			UserPanel docentPanel = new UserPanel();
+			tabbedPane.addTab("User overzicht", docentPanel);
 
 			RechtenPanel rechtenPanel = new RechtenPanel();
 			tabbedPane.addTab("Rechten & Permissies", rechtenPanel);
