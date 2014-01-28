@@ -54,6 +54,27 @@ public class Dao {
 		}
 	}
 
+	public List<Rol> getAlleRollen() {
+		List<Rol> rollen = new ArrayList<Rol>();
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT * FROM rol");
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				Rol rol = new Rol(resultSet.getLong(1), resultSet.getString(2));
+				for (Permissie p : getPermissiesVanRol(rol.getId())) {
+					rol.addPermissie(p);
+				}
+				rollen.add(rol);
+			}
+			return rollen;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return rollen;
+		}
+	}
+
 	public void addVak(String naam, long docentId) {
 		try {
 			PreparedStatement prepareStatement = manager

@@ -38,6 +38,9 @@ public class Permissie {
 			return false;
 		return true;
 	}
-	
-	
+
+	public String toString() {
+		return naam;
+	}
+
 }
