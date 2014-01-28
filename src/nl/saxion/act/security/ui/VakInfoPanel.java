@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import nl.saxion.act.security.model.Klas;
-import nl.saxion.act.security.rbac.User;
 
 public class VakInfoPanel extends JPanel {
 	private DefaultListModel<Klas> klasLijst = new DefaultListModel<Klas>();
@@ -18,7 +17,7 @@ public class VakInfoPanel extends JPanel {
 		setLayout(new BorderLayout());
 		this.setBorder(new EmptyBorder(0, 10, 10, 10));
 
-		JList<Klas> list = new JList();
+		JList<Klas> list = new JList<Klas>();
 		list.setModel(klasLijst);
 		add(list, BorderLayout.CENTER);
 
@@ -28,6 +27,7 @@ public class VakInfoPanel extends JPanel {
 	}
 
 	public void setKlassenLijst(List<Klas> klassen) {
+		klasLijst.clear();
 		for (Klas klas : klassen) {
 			klasLijst.addElement(klas);
 		}

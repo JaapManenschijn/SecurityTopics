@@ -27,6 +27,7 @@ public class KlasInfoPanel extends JPanel {
 	}
 
 	public void setLeerlingenLijst(List<User> leerlingen) {
+		leerlingLijst.clear();
 		for (User leerling : leerlingen) {
 			leerlingLijst.addElement(leerling);
 		}
