@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import nl.saxion.act.security.model.Klas;
+import nl.saxion.act.security.model.Toets;
 import nl.saxion.act.security.model.Vak;
 import nl.saxion.act.security.rbac.Permissie;
 import nl.saxion.act.security.rbac.PermissieHelper;
@@ -200,6 +201,47 @@ public class Dao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return klassen;
+		}
+	}
+
+	public List<Toets> getToetsenVanVak(long vakId) {
+		List<Toets> toetsen = new ArrayList<Toets>();
+
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT * FROM toetsen WHERE vak_id = ?");
+			prepareStatement.setLong(1, vakId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				Vak vak = getVak(resultSet.getLong(1));
+				Toets toets = new Toets(resultSet.getLong(1), vak);
+				toetsen.add(toets);
+			}
+			return toetsen;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return toetsen;
+		}
+	}
+
+	public Vak getVak(long vakId) {
+		Vak vak = null;
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT * FROM vakken WHERE id = ?");
+			prepareStatement.setLong(1, vakId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				vak = new Vak(resultSet.getLong(1), resultSet.getString(2));
+				User user = getUser(resultSet.getLong(3));
+				vak.setDocent(user);
+			}
+			return vak;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return vak;
 		}
 	}
 
