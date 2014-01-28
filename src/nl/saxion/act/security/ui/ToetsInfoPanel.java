@@ -12,17 +12,15 @@ import nl.saxion.act.security.model.Toets;
 
 public class ToetsInfoPanel extends JPanel {
 	private DefaultListModel<Toets> toetsLijst = new DefaultListModel<Toets>();
+	private JList<Toets> list;
 
 	public ToetsInfoPanel() {
 		setLayout(new BorderLayout());
-		this.setBorder(new EmptyBorder(0, 10, 10, 10));
+		this.setBorder(new EmptyBorder(0, 10, 0, 10));
 
-		JList<Toets> list = new JList<Toets>();
+		list = new JList<Toets>();
 		list.setModel(toetsLijst);
 		add(list, BorderLayout.CENTER);
-
-		JPanel panel = new JPanel();
-		add(panel, BorderLayout.SOUTH);
 
 	}
 
@@ -31,6 +29,15 @@ public class ToetsInfoPanel extends JPanel {
 		for (Toets toets : toetsen) {
 			toetsLijst.addElement(toets);
 		}
+		repaint();
+	}
+
+	public Toets getSelectedToets() {
+		return toetsLijst.get(list.getSelectedIndex());
+	}
+
+	public void clear() {
+		toetsLijst.clear();
 	}
 
 }

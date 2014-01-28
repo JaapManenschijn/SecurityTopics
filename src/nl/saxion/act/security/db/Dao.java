@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -35,23 +36,29 @@ public class Dao {
 		return instance;
 	}
 
-	public void setPermissieMap() {
-		Map<String, Permissie> permissies = new HashMap<String, Permissie>();
+	public List<Permissie> getPermissies() {
+		List<Permissie> permissies = new ArrayList<Permissie>();
 		try {
 			PreparedStatement prepareStatement = manager
 					.prepareStatement("SELECT * FROM permissie");
 			ResultSet resultSet = prepareStatement.executeQuery();
 
 			while (resultSet.next()) {
-				permissies.put(
-						resultSet.getString(2),
-						new Permissie(resultSet.getLong(1), resultSet
-								.getString(2)));
+				permissies.add(new Permissie(resultSet.getLong(1), resultSet
+						.getString(2)));
 			}
-			PermissieHelper.permissies = permissies;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return permissies;
+	}
+
+	public void setPermissieMap() {
+		Map<String, Permissie> permissies = new HashMap<String, Permissie>();
+		for (Permissie p : getPermissies()) {
+			permissies.put(p.getNaam(), p);
+		}
+		PermissieHelper.permissies = permissies;
 	}
 
 	public List<Rol> getAlleRollen() {
@@ -242,6 +249,37 @@ public class Dao {
 		}
 	}
 
+	public List<User> getDocenten() {
+		List<User> docenten = new ArrayList<User>();
+		try {
+			PreparedStatement preparedStatement = manager
+					.prepareStatement("SELECT user_id FROM user_rol WHERE rol_id = 2");
+			ResultSet result = preparedStatement.executeQuery();
+			while (result.next()) {
+				docenten.add(getUser(result.getLong(1)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return docenten;
+	}
+
+	public List<Vak> getVakken() {
+		List<Vak> vakken = new ArrayList<Vak>();
+		try {
+			PreparedStatement preparedStatement = manager
+					.prepareStatement("SELECT id FROM vakken");
+			ResultSet result = preparedStatement.executeQuery();
+
+			while (result.next()) {
+				vakken.add(getVak(result.getLong(1)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return vakken;
+	}
+
 	public List<Toets> getToetsenVanVak(long vakId) {
 		List<Toets> toetsen = new ArrayList<Toets>();
 
@@ -253,7 +291,8 @@ public class Dao {
 
 			while (resultSet.next()) {
 				Vak vak = getVak(resultSet.getLong(1));
-				Toets toets = new Toets(resultSet.getLong(1), vak);
+				Toets toets = new Toets(resultSet.getLong(1), vak,
+						resultSet.getString(3));
 				toetsen.add(toets);
 			}
 			return toetsen;
@@ -360,11 +399,12 @@ public class Dao {
 		}
 	}
 
-	public void addToets(long vakId) {
+	public void addToets(long vakId, String naam) {
 		try {
 			PreparedStatement prepareStatement = manager
-					.prepareStatement("INSERT INTO toetsen (vak_id) VALUES (?)");
+					.prepareStatement("INSERT INTO toetsen (vak_id, naam) VALUES (?,?)");
 			prepareStatement.setLong(1, vakId);
+			prepareStatement.setString(2, naam);
 			prepareStatement.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -379,6 +419,20 @@ public class Dao {
 			prepareStatement.setLong(2, studentId);
 			prepareStatement.setDouble(3, cijfer);
 			prepareStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void updateCijferBijStudent(long toetsId, long studentId,
+			double cijfer) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("UPDATE toetsuitslag SET cijfer = ? WHERE toets_id = ? AND leerling_id = ?");
+			prepareStatement.setLong(2, toetsId);
+			prepareStatement.setLong(3, studentId);
+			prepareStatement.setDouble(1, cijfer);
+			prepareStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -457,16 +511,24 @@ public class Dao {
 		return result;
 	}
 
-	public void addUser(String naam, String wachtwoord) {
+	public long addUser(String naam, String wachtwoord) {
+		long id = -1;
 		try {
-			PreparedStatement prepareStatement = manager
-					.prepareStatement("INSERT INTO users (naam, wachtwoord) VALUES (?,?)");
+			PreparedStatement prepareStatement = manager.prepareStatement(
+					"INSERT INTO users (naam, wachtwoord) VALUES (?,?)",
+					Statement.RETURN_GENERATED_KEYS);
 			prepareStatement.setString(1, naam);
 			prepareStatement.setString(2, encryptPassword(wachtwoord));
-			prepareStatement.execute();
+			prepareStatement.executeUpdate();
+			ResultSet result = prepareStatement.getGeneratedKeys();
+			if (result.next()) {
+				id = result.getLong(1);
+			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return id;
 	}
 
 	public void addRol(String naam) {
@@ -658,5 +720,19 @@ public class Dao {
 			e.printStackTrace();
 		}
 		return klassen;
+	}
+
+	public void verwijderPermissieBijRol(long permissieId, long rolId) {
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("DELETE FROM rol_permissie WHERE rol_id = ? AND permissie_id = ?");
+			prepareStatement.setLong(1, rolId);
+			prepareStatement.setLong(2, permissieId);
+
+			prepareStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 }

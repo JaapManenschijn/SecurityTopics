@@ -21,9 +21,11 @@ import javax.swing.JTextField;
 import nl.saxion.act.security.db.Dao;
 import nl.saxion.act.security.model.Klas;
 import nl.saxion.act.security.model.Vak;
+import nl.saxion.act.security.rbac.PermissieHelper;
 import nl.saxion.act.security.rbac.Sessie;
+import nl.saxion.act.security.rbac.User;
 
-public class VakPanel extends JPanel {
+public class VakPanel extends RefreshPanel {
 	private DefaultListModel<Vak> vakLijst = new DefaultListModel<Vak>();
 	private VakInfoPanel vakInfoPanel;
 	private JList<Vak> list;
@@ -61,20 +63,41 @@ public class VakPanel extends JPanel {
 		panel.add(verwijderVak);
 		panel.add(klasToevoegen);
 		panel.add(klasVerwijderen);
-		vulVakkenlijst();
 		vakToevoegen.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JTextField naam = new JTextField();
+				JComboBox docenten = new JComboBox();
+				for (User docent : Dao.getInstance().getDocenten()) {
+					docenten.addItem(docent);
+				}
 				JLabel vulNaam = new JLabel("Hoe heet het vak?");
-				final JComponent[] inputs = new JComponent[] { vulNaam, naam };
+				JComponent[] inputs = null;
+				if (Sessie.getIngelogdeGebruiker().heeftPermissie(
+						PermissieHelper.permissies.get("BEHEERALLEVAKKEN"))) {
+					inputs = new JComponent[] { vulNaam, naam,
+							new JLabel("Uitvoerende docent"), docenten };
+				} else if (Sessie.getIngelogdeGebruiker().heeftPermissie(
+						PermissieHelper.permissies.get("BEHEEREIGENVAKKEN"))) {
+					inputs = new JComponent[] { vulNaam, naam };
+				}
 				int result = JOptionPane.showConfirmDialog(null, inputs,
 						"Vak toevoegen", JOptionPane.OK_CANCEL_OPTION);
 				if (result == JOptionPane.YES_OPTION) {
-					Dao.getInstance().addVak(naam.getText(),
-							Sessie.getIngelogdeGebruiker().getId());
-					vulVakkenlijst();
+					if (Sessie.getIngelogdeGebruiker().heeftPermissie(
+							PermissieHelper.permissies.get("BEHEERALLEVAKKEN"))) {
+						Dao.getInstance().addVak(naam.getText(),
+								((User) (docenten.getSelectedItem())).getId());
+					} else if (Sessie.getIngelogdeGebruiker()
+							.heeftPermissie(
+									PermissieHelper.permissies
+											.get("BEHEEREIGENVAKKEN"))) {
+						Dao.getInstance().addVak(naam.getText(),
+								Sessie.getIngelogdeGebruiker().getId());
+					}
+
+					refreshPanel();
 				}
 			}
 
@@ -89,7 +112,8 @@ public class VakPanel extends JPanel {
 						JOptionPane.YES_NO_OPTION);
 				if (result == JOptionPane.YES_OPTION) {
 					Dao.getInstance().verwijderVak(selected.getId());
-					vulVakkenlijst();
+					refreshPanel();
+					vakInfoPanel.clear();
 				}
 			}
 
@@ -153,8 +177,16 @@ public class VakPanel extends JPanel {
 		});
 	}
 
-	private void vulVakkenlijst() {
-		if (Sessie.getIngelogdeGebruiker().isDocent()) {
+	public void refreshPanel() {
+		if (Sessie.getIngelogdeGebruiker().heeftPermissie(
+				PermissieHelper.permissies.get("BEHEERALLEVAKKEN"))) {
+			List<Vak> vakken = Dao.getInstance().getVakken();
+			vakLijst.clear();
+			for (Vak vak : vakken) {
+				vakLijst.addElement(vak);
+			}
+		} else if (Sessie.getIngelogdeGebruiker().heeftPermissie(
+				PermissieHelper.permissies.get("BEHEEREIGENVAKKEN"))) {
 			List<Vak> vakken = Dao.getInstance().getVakkenVanDocent(
 					Sessie.getIngelogdeGebruiker().getId());
 			vakLijst.clear();

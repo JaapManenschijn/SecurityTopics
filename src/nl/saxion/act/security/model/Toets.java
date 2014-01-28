@@ -8,11 +8,13 @@ import nl.saxion.act.security.rbac.User;
 public class Toets {
 	private long id;
 	private Vak vak;
+	private String naam;
 	private Map<User, Double> uitslagen;
 
-	public Toets(long id, Vak vak) {
+	public Toets(long id, Vak vak, String naam) {
 		this.id = id;
 		this.vak = vak;
+		this.naam = naam;
 		uitslagen = new HashMap<User, Double>();
 	}
 
@@ -20,6 +22,10 @@ public class Toets {
 		assert (user.isStudent());
 		assert (cijfer >= 1.0 && cijfer <= 10.0);
 		uitslagen.put(user, cijfer);
+	}
+
+	public boolean heeftCijfer(User user) {
+		return uitslagen.containsKey(user);
 	}
 
 	public long getId() {
@@ -34,8 +40,12 @@ public class Toets {
 		return uitslagen;
 	}
 
+	public String getNaam() {
+		return naam;
+	}
+
 	public String toString() {
-		return "Toets " + id;
+		return naam;
 	}
 
 	@Override

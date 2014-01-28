@@ -12,12 +12,13 @@ import nl.saxion.act.security.rbac.Permissie;
 
 public class RechtenInfoPanel extends JPanel {
 	private DefaultListModel<Permissie> permissieLijst = new DefaultListModel<Permissie>();
+	private JList<Permissie> list;
 
 	public RechtenInfoPanel() {
 		setLayout(new BorderLayout());
 		this.setBorder(new EmptyBorder(0, 10, 10, 10));
 
-		JList<Permissie> list = new JList<Permissie>();
+		list = new JList<Permissie>();
 		list.setModel(permissieLijst);
 		add(list, BorderLayout.CENTER);
 
@@ -33,4 +34,11 @@ public class RechtenInfoPanel extends JPanel {
 		}
 	}
 
+	public Permissie getSelectedPermissie() {
+		return permissieLijst.get(list.getSelectedIndex());
+	}
+
+	public void clear() {
+		permissieLijst.clear();
+	}
 }

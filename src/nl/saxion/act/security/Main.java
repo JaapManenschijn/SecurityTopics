@@ -59,10 +59,20 @@ public class Main {
 		dao.addLeerlingAanKlas(3, 1);
 		dao.addVak("Minor Sec", 2);
 		dao.addKlasAanVak(1, 1);
-		dao.addToets(1);
+		dao.addToets(1, "testToets");
 
 		dao.addPermissie("INZIENEIGENSTUDENTEN");
+		dao.addPermissie("INZIENALLESTUDENTEN");
+		dao.addPermissie("BEHEEREIGENKLASSEN");
+		dao.addPermissie("BEHEERALLEKLASSEN");
+		dao.addPermissie("BEHEEREIGENVAKKEN");
+		dao.addPermissie("BEHEERALLEVAKKEN");
+		dao.setPermissieBijRol(1, 2);
+		dao.setPermissieBijRol(1, 4);
+		dao.setPermissieBijRol(1, 6);
 		dao.setPermissieBijRol(2, 1);
+		dao.setPermissieBijRol(2, 3);
+		dao.setPermissieBijRol(2, 5);
 
 		dao.setPermissieMap();
 	}

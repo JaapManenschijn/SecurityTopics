@@ -11,7 +11,6 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JList;
-import javax.swing.JPanel;
 
 import nl.saxion.act.security.db.Dao;
 import nl.saxion.act.security.model.Vak;
@@ -19,9 +18,10 @@ import nl.saxion.act.security.rbac.PermissieHelper;
 import nl.saxion.act.security.rbac.Sessie;
 import nl.saxion.act.security.rbac.User;
 
-public class CijferOverzichtPanel extends JPanel {
+public class CijferOverzichtPanel extends RefreshPanel {
 	private DefaultListModel<Vak> vakLijst = new DefaultListModel<Vak>();
 	private CijferPanel cijferPanel;
+	private JComboBox comboBox;
 
 	public CijferOverzichtPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -34,9 +34,21 @@ public class CijferOverzichtPanel extends JPanel {
 					int index = list.locationToIndex(evt.getPoint());
 					if (index < vakLijst.size() && index >= 0) {
 						Vak vak = vakLijst.get(index);
-						double cijfer = Dao.getInstance()
-								.getCijferVanStudentVanVak(vak.getId(),
-										Sessie.getIngelogdeGebruiker().getId());
+						double cijfer;
+						if (Sessie.getIngelogdeGebruiker().isDocent()
+								|| Sessie.getIngelogdeGebruiker().isSuperUser()) {
+							User student = (User) comboBox.getSelectedItem();
+							cijfer = Dao.getInstance()
+									.getCijferVanStudentVanVak(vak.getId(),
+											student.getId());
+						} else {
+							cijfer = Dao.getInstance()
+									.getCijferVanStudentVanVak(
+											vak.getId(),
+											Sessie.getIngelogdeGebruiker()
+													.getId());
+						}
+
 						cijferPanel.setVak(vak.getNaam());
 						cijferPanel.setCijfer("" + cijfer);
 						cijferPanel.setDocent(vak.getDocent().getNaam());
@@ -49,19 +61,11 @@ public class CijferOverzichtPanel extends JPanel {
 		cijferPanel = new CijferPanel();
 		add(cijferPanel, BorderLayout.CENTER);
 
-		if (Sessie.getIngelogdeGebruiker().isStudent()) {
-			List<Vak> vakken = Dao.getInstance().getVakkenVanStudent(
-					Sessie.getIngelogdeGebruiker().getId());
-			for (Vak vak : vakken) {
-				vakLijst.addElement(vak);
-			}
-		}
-
 		if (Sessie.getIngelogdeGebruiker().heeftPermissie(
 				PermissieHelper.permissies.get("INZIENEIGENSTUDENTEN"))
 				|| Sessie.getIngelogdeGebruiker().heeftPermissie(
 						PermissieHelper.permissies.get("INZIENALLESTUDENTEN"))) {
-			final JComboBox comboBox = new JComboBox();
+			comboBox = new JComboBox();
 			comboBox.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (comboBox.getSelectedItem() instanceof User) {
@@ -72,6 +76,7 @@ public class CijferOverzichtPanel extends JPanel {
 						for (Vak vak : vakken) {
 							vakLijst.addElement(vak);
 						}
+						cijferPanel.clear();
 					} else {
 						vakLijst.clear();
 						cijferPanel.clear();
@@ -79,18 +84,37 @@ public class CijferOverzichtPanel extends JPanel {
 				}
 			});
 			add(comboBox, BorderLayout.NORTH);
+
+		}
+		refreshPanel();
+	}
+
+	public void refreshPanel() {
+
+		if (Sessie.getIngelogdeGebruiker().heeftPermissie(
+				PermissieHelper.permissies.get("INZIENALLESTUDENTEN"))) {
+			comboBox.removeAllItems();
 			comboBox.addItem("Selecteer een leerling...");
-			if (Sessie.getIngelogdeGebruiker().heeftPermissie(
-					PermissieHelper.permissies.get("INZIENALLESTUDENTEN"))) {
-				for (User student : Dao.getInstance().getStudenten()) {
-					comboBox.addItem(student);
-				}
-			} else {
-				for (User student : Dao.getInstance().getStudentenVanDocent(
-						Sessie.getIngelogdeGebruiker().getId())) {
-					comboBox.addItem(student);
-				}
+			for (User student : Dao.getInstance().getStudenten()) {
+				comboBox.addItem(student);
+			}
+		} else if (Sessie.getIngelogdeGebruiker().heeftPermissie(
+				PermissieHelper.permissies.get("INZIENEIGENSTUDENTEN"))) {
+			comboBox.removeAllItems();
+			comboBox.addItem("Selecteer een leerling...");
+			for (User student : Dao.getInstance().getStudentenVanDocent(
+					Sessie.getIngelogdeGebruiker().getId())) {
+				comboBox.addItem(student);
 			}
 		}
+		if (Sessie.getIngelogdeGebruiker().isStudent()) {
+			List<Vak> vakken = Dao.getInstance().getVakkenVanStudent(
+					Sessie.getIngelogdeGebruiker().getId());
+			for (Vak vak : vakken) {
+				vakLijst.addElement(vak);
+			}
+		}
+
+		cijferPanel.clear();
 	}
 }

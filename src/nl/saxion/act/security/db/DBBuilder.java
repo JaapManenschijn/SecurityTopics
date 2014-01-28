@@ -72,6 +72,7 @@ public class DBBuilder {
 						"id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
 						+ //
 						"vak_id INT NOT NULL," + //
+						"naam VARCHAR(255) NOT NULL," + //
 						"CONSTRAINT pk_toets PRIMARY KEY (id))",
 
 				"CREATE TABLE vakken ("

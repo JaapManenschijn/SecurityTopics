@@ -16,7 +16,7 @@ public class VakInfoPanel extends JPanel {
 
 	public VakInfoPanel() {
 		setLayout(new BorderLayout());
-		this.setBorder(new EmptyBorder(0, 10, 10, 10));
+		this.setBorder(new EmptyBorder(0, 10, 0, 10));
 
 		list = new JList<Klas>();
 		list.setModel(klasLijst);
@@ -32,5 +32,9 @@ public class VakInfoPanel extends JPanel {
 
 	public Klas getSelectedKlas() {
 		return klasLijst.get(list.getSelectedIndex());
+	}
+
+	public void clear() {
+		klasLijst.clear();
 	}
 }

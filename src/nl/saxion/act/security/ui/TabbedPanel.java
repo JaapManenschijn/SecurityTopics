@@ -21,7 +21,7 @@ public class TabbedPanel extends JPanel {
 		setLayout(new BorderLayout());
 		this.frame = frame;
 
-		JTabbedPane tabbedPane = new JTabbedPane();
+		final JTabbedPane tabbedPane = new JTabbedPane();
 
 		CijferOverzichtPanel coPanel = new CijferOverzichtPanel();
 		tabbedPane.addTab("Cijfer overzicht", coPanel);
@@ -56,10 +56,16 @@ public class TabbedPanel extends JPanel {
 		});
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				if(Sessie.getIngelogdeGebruiker() == null){
-					JOptionPane.showMessageDialog(null,
-							"De sessie is verlopen, u wordt teruggebracht naar het loginscherm.",
-							"Sessie verlopen", JOptionPane.ERROR_MESSAGE);
+				RefreshPanel panel = (RefreshPanel) tabbedPane
+						.getSelectedComponent();
+				panel.refreshPanel();
+				if (Sessie.getIngelogdeGebruiker() == null) {
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"De sessie is verlopen, u wordt teruggebracht naar het loginscherm.",
+									"Sessie verlopen",
+									JOptionPane.ERROR_MESSAGE);
 					frame.removeAll();
 					frame.getContentPane().add(new LoginScherm(frame));
 					frame.revalidate();

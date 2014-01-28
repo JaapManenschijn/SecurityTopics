@@ -35,4 +35,9 @@ public class KlasInfoPanel extends JPanel {
 		int index = list.getSelectedIndex();
 		return leerlingLijst.get(index);
 	}
+
+	public void clear() {
+		leerlingLijst.clear();
+
+	}
 }

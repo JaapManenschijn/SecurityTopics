@@ -16,13 +16,15 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import nl.saxion.act.security.db.Dao;
 import nl.saxion.act.security.model.Klas;
+import nl.saxion.act.security.rbac.PermissieHelper;
 import nl.saxion.act.security.rbac.Sessie;
 import nl.saxion.act.security.rbac.User;
 
-public class KlasPanel extends JPanel {
+public class KlasPanel extends RefreshPanel {
 	private DefaultListModel<Klas> klasLijst = new DefaultListModel<Klas>();
 	private KlasInfoPanel klasInfoPanel;
 
@@ -47,17 +49,11 @@ public class KlasPanel extends JPanel {
 		klasInfoPanel = new KlasInfoPanel();
 		add(klasInfoPanel, BorderLayout.CENTER);
 
-		if (Sessie.getIngelogdeGebruiker().isDocent()) {
-			List<Klas> klassen = Dao.getInstance().getKlassenVanDocent(
-					Sessie.getIngelogdeGebruiker().getId());
-			for (Klas klas : klassen) {
-				klasLijst.addElement(klas);
-			}
-		}
-
 		JPanel panel = new JPanel();
 		JButton addLeerling = new JButton("Voeg leerling toe aan klas");
 		JButton verwijderLeerling = new JButton("Verwijder leerling uit klas");
+		JButton voegKlasToe = new JButton("Voeg klas toe");
+		panel.add(voegKlasToe);
 		panel.add(addLeerling);
 		panel.add(verwijderLeerling);
 		verwijderLeerling.addActionListener(new ActionListener() {
@@ -122,6 +118,40 @@ public class KlasPanel extends JPanel {
 			}
 
 		});
+		voegKlasToe.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JTextField naam = new JTextField();
+				JLabel vulNaam = new JLabel("Vul de klasnaam in");
+				final JComponent[] inputs = new JComponent[] { vulNaam, naam };
+				int result = JOptionPane.showConfirmDialog(null, inputs,
+						"Klas toevoegen", JOptionPane.OK_CANCEL_OPTION);
+				if (result == JOptionPane.YES_OPTION) {
+					Dao.getInstance().addKlas(naam.getText());
+				}
+			}
+
+		});
 		add(panel, BorderLayout.SOUTH);
+	}
+
+	public void refreshPanel() {
+		klasLijst.clear();
+		if (Sessie.getIngelogdeGebruiker().heeftPermissie(
+				PermissieHelper.permissies.get("BEHEERALLEKLASSEN"))) {
+			List<Klas> klassen = Dao.getInstance().getKlassen();
+			for (Klas klas : klassen) {
+				klasLijst.addElement(klas);
+			}
+		} else if (Sessie.getIngelogdeGebruiker().heeftPermissie(
+				PermissieHelper.permissies.get("BEHEEREIGENKLASSEN"))) {
+			List<Klas> klassen = Dao.getInstance().getKlassenVanDocent(
+					Sessie.getIngelogdeGebruiker().getId());
+			for (Klas klas : klassen) {
+				klasLijst.addElement(klas);
+			}
+		}
+		klasInfoPanel.clear();
 	}
 }
