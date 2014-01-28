@@ -12,17 +12,15 @@ import nl.saxion.act.security.rbac.User;
 
 public class KlasInfoPanel extends JPanel {
 	private DefaultListModel<User> leerlingLijst = new DefaultListModel<User>();
+	private JList<User> list;
 
 	public KlasInfoPanel() {
 		setLayout(new BorderLayout());
-		this.setBorder(new EmptyBorder(0, 10, 10, 10));
+		this.setBorder(new EmptyBorder(0, 10, 0, 10));
 
-		JList<User> list = new JList();
+		list = new JList();
 		list.setModel(leerlingLijst);
 		add(list, BorderLayout.CENTER);
-
-		JPanel panel = new JPanel();
-		add(panel, BorderLayout.SOUTH);
 
 	}
 
@@ -33,4 +31,8 @@ public class KlasInfoPanel extends JPanel {
 		}
 	}
 
+	public User getSelectedLeerling() {
+		int index = list.getSelectedIndex();
+		return leerlingLijst.get(index);
+	}
 }

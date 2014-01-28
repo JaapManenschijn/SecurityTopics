@@ -2,17 +2,21 @@ package nl.saxion.act.security.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
 import nl.saxion.act.security.db.Dao;
 import nl.saxion.act.security.model.Klas;
 import nl.saxion.act.security.rbac.Sessie;
+import nl.saxion.act.security.rbac.User;
 
 public class KlasPanel extends JPanel {
 	private DefaultListModel<Klas> klasLijst = new DefaultListModel<Klas>();
@@ -21,7 +25,7 @@ public class KlasPanel extends JPanel {
 	public KlasPanel() {
 		setLayout(new BorderLayout(0, 0));
 
-		JList<Klas> list = new JList<Klas>(klasLijst);
+		final JList<Klas> list = new JList<Klas>(klasLijst);
 		list.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
 				JList<Klas> list = (JList<Klas>) evt.getSource();
@@ -46,5 +50,20 @@ public class KlasPanel extends JPanel {
 				klasLijst.addElement(klas);
 			}
 		}
+
+		JPanel panel = new JPanel();
+		JButton addLeerling = new JButton("Voeg leerling toe aan klas");
+		JButton verwijderLeerling = new JButton("Verwijder leerling uit klas");
+		panel.add(addLeerling);
+		panel.add(verwijderLeerling);
+		verwijderLeerling.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Klas klas = klasLijst.get(list.getSelectedIndex());
+				User student = klasInfoPanel.getSelectedLeerling();
+				Dao.getInstance();
+			}
+		});
+		add(panel, BorderLayout.SOUTH);
 	}
 }
