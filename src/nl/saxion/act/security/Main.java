@@ -59,7 +59,9 @@ public class Main {
 		dao.addLeerlingAanKlas(3, 1);
 		dao.addVak("Minor Sec", 2);
 		dao.addKlasAanVak(1, 1);
-		// TODO Permissies toevoegen
+
+		dao.addPermissie("INZIENEIGENSTUDENTEN");
+		dao.setPermissieBijRol(2, 1);
 
 		dao.setPermissieMap();
 	}
