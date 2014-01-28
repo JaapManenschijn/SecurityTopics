@@ -29,7 +29,6 @@ public class KlasPanel extends JPanel {
 					int index = list.locationToIndex(evt.getPoint());
 					if (index < klasLijst.size() && index >= 0) {
 						Klas klas = klasLijst.get(index);
-						System.out.println(klas.getNaam());
 						klasInfoPanel.setLeerlingenLijst(klas.getLeerlingen());
 					}
 				}
