@@ -30,8 +30,8 @@ public class VakPanel extends JPanel {
 					int index = list.locationToIndex(evt.getPoint());
 					if (index < vakLijst.size() && index >= 0) {
 						Vak vak = vakLijst.get(index);
-//						List<Klas> klassen = Dao.getInstance().get
-//						vakLijst.setLeerlingenLijst();
+						List<Klas> klassen = Dao.getInstance().getKlassenVanVak(vak.getId());
+						vakInfoPanel.setKlassenLijst(klassen);
 					}
 				}
 			}
@@ -42,10 +42,10 @@ public class VakPanel extends JPanel {
 		add(vakInfoPanel, BorderLayout.CENTER);
 
 		if (Sessie.getIngelogdeGebruiker().isDocent()) {
-//			List<Vak> vakken = Dao.getInstance().getVakkenVanDocent(Sessie.getIngelogdeGebruiker().getId());
-//			for (Vak vak : vakken) {
-//				vakLijst.addElement(vak);
-//			}
+			List<Vak> vakken = Dao.getInstance().getVakkenVanDocent(Sessie.getIngelogdeGebruiker().getId());
+			for (Vak vak : vakken) {
+				vakLijst.addElement(vak);
+			}
 		}
 	}
 }

@@ -27,7 +27,7 @@ public class VakInfoPanel extends JPanel {
 
 	}
 
-	public void setLeerlingenLijst(List<Klas> klassen) {
+	public void setKlassenLijst(List<Klas> klassen) {
 		for (Klas klas : klassen) {
 			klasLijst.addElement(klas);
 		}

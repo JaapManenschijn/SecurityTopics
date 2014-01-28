@@ -172,6 +172,59 @@ public class Dao {
 		}
 	}
 
+	public List<Klas> getKlassenVanVak(long vakId) {
+		List<Long> klasIds = new ArrayList<Long>();
+		List<Klas> klassen = new ArrayList<Klas>();
+
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT klas_id FROM vak_klas WHERE vak_id = ?");
+			prepareStatement.setLong(1, vakId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				klasIds.add(resultSet.getLong(1));
+			}
+
+			PreparedStatement prepareStatement3 = manager
+					.prepareStatement("SELECT * FROM klassen WHERE id = ?");
+			for (Long klasId : klasIds) {
+				prepareStatement3.setLong(1, klasId);
+				ResultSet resultSet3 = prepareStatement3.executeQuery();
+
+				while (resultSet3.next()) {
+					klassen.add(getKlas(klasId));
+				}
+			}
+			return klassen;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return klassen;
+		}
+	}
+
+	public List<Vak> getVakkenVanDocent(long docentId) {
+		List<Vak> vakken = new ArrayList<Vak>();
+
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT * FROM vakken WHERE docent_id = ?");
+			prepareStatement.setLong(1, docentId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				Vak vak = new Vak(resultSet.getLong(1), resultSet.getString(2));
+				User user = getUser(resultSet.getLong(3));
+				vak.setDocent(user);
+				vakken.add(vak);
+			}
+			return vakken;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return vakken;
+		}
+	}
+
 	public List<Vak> getVakkenVanStudent(long studentId) {
 		List<Vak> vakken = new ArrayList<Vak>();
 		List<Long> klasIds = new ArrayList<Long>();
