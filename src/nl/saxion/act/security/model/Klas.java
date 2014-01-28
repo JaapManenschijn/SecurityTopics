@@ -1,5 +1,6 @@
 package nl.saxion.act.security.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.saxion.act.security.rbac.User;
@@ -9,22 +10,24 @@ public class Klas {
 	private String naam;
 	private List<User> leerlingen;
 	private List<Vak> vakken;
-	
-	public Klas(long id, String naam){
-		this.id = id; 
+
+	public Klas(long id, String naam) {
+		this.id = id;
 		this.naam = naam;
+		this.leerlingen = new ArrayList<User>();
+		this.vakken = new ArrayList<Vak>();
 	}
-	
-	public void addStudent(User user){
-		if(user.isStudent()){
-			if(!leerlingen.contains(user)){
+
+	public void addStudent(User user) {
+		if (user.isStudent()) {
+			if (!leerlingen.contains(user)) {
 				leerlingen.add(user);
 			}
 		}
 	}
-	
-	public void addVak(Vak vak){
-		if(!vakken.contains(vak)){
+
+	public void addVak(Vak vak) {
+		if (!vakken.contains(vak)) {
 			vakken.add(vak);
 		}
 	}
@@ -43,6 +46,10 @@ public class Klas {
 
 	public List<Vak> getVakken() {
 		return vakken;
+	}
+
+	public String toString() {
+		return naam;
 	}
 
 }
