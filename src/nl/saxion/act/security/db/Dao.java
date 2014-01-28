@@ -187,15 +187,8 @@ public class Dao {
 				klasIds.add(resultSet.getLong(1));
 			}
 
-			PreparedStatement prepareStatement3 = manager
-					.prepareStatement("SELECT * FROM klassen WHERE id = ?");
 			for (Long klasId : klasIds) {
-				prepareStatement3.setLong(1, klasId);
-				ResultSet resultSet3 = prepareStatement3.executeQuery();
-
-				while (resultSet3.next()) {
-					klassen.add(getKlas(klasId));
-				}
+				klassen.add(getKlas(klasId));
 			}
 			return klassen;
 		} catch (SQLException e) {
@@ -312,20 +305,8 @@ public class Dao {
 					vakIds.add(resultSet2.getLong(1));
 				}
 			}
-
-			PreparedStatement prepareStatement3 = manager
-					.prepareStatement("SELECT * FROM vakken WHERE id = ?");
 			for (Long vakId : vakIds) {
-				prepareStatement3.setLong(1, vakId);
-				ResultSet resultSet3 = prepareStatement3.executeQuery();
-
-				while (resultSet3.next()) {
-					Vak vak = new Vak(resultSet3.getLong(1),
-							resultSet3.getString(2));
-					User user = getUser(resultSet3.getLong(3));
-					vak.setDocent(user);
-					vakken.add(vak);
-				}
+				vakken.add(getVak(vakId));
 			}
 			return vakken;
 		} catch (SQLException e) {
