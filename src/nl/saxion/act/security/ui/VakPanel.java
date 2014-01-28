@@ -100,8 +100,7 @@ public class VakPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JComboBox klassen = new JComboBox();
-				for (Klas klas : Dao.getInstance().getKlassenVanDocent(
-						Sessie.getIngelogdeGebruiker().getId())) {
+				for (Klas klas : Dao.getInstance().getKlassen()) {
 					klassen.addItem(klas);
 				}
 				JLabel selecteer = new JLabel(
@@ -118,10 +117,10 @@ public class VakPanel extends JPanel {
 						if (!selectedKlas.getVakken().contains(vakSelected)) {
 							selectedKlas.getVakken().add(vakSelected);
 
-							vakInfoPanel.setKlassenLijst(Dao.getInstance()
-									.getKlassenVanVak(vakSelected.getId()));
 							Dao.getInstance().addKlasAanVak(
 									selectedKlas.getId(), vakSelected.getId());
+							vakInfoPanel.setKlassenLijst(Dao.getInstance()
+									.getKlassenVanVak(vakSelected.getId()));
 						} else {
 							JOptionPane.showMessageDialog(null,
 									"Klas is al gekoppeld aan dit vak!",
@@ -137,7 +136,18 @@ public class VakPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				Klas klas = vakInfoPanel.getSelectedKlas();
+				Vak vak = vakLijst.get(list.getSelectedIndex());
+				int result = JOptionPane.showConfirmDialog(null, "Wil je "
+						+ klas.getNaam() + " verwijderen uit " + vak.getNaam()
+						+ "?", null, JOptionPane.YES_NO_OPTION);
+				if (result == JOptionPane.YES_OPTION) {
+					Dao.getInstance().verwijderKlasVanVak(klas.getId(),
+							vak.getId());
+					klas.getVakken().remove(vak);
+					vakInfoPanel.setKlassenLijst(Dao.getInstance()
+							.getKlassenVanVak(vak.getId()));
+				}
 			}
 
 		});

@@ -218,6 +218,30 @@ public class Dao {
 		}
 	}
 
+	public List<Vak> getVakkenVanKlas(long klasId) {
+		List<Long> vakIds = new ArrayList<Long>();
+		List<Vak> vakken = new ArrayList<Vak>();
+
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT vak_id FROM vak_klas WHERE klas_id = ?");
+			prepareStatement.setLong(1, klasId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+
+			while (resultSet.next()) {
+				vakIds.add(resultSet.getLong(1));
+			}
+
+			for (Long vakId : vakIds) {
+				vakken.add(getVak(vakId));
+			}
+			return vakken;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return vakken;
+		}
+	}
+
 	public List<Toets> getToetsenVanVak(long vakId) {
 		List<Toets> toetsen = new ArrayList<Toets>();
 
@@ -544,6 +568,9 @@ public class Dao {
 				while (leerlingIds.next()) {
 					klas.addStudent(getUser(leerlingIds.getLong(1)));
 				}
+				for (Vak vak : getVakkenVanKlas(klas_id)) {
+					klas.addVak(vak);
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -604,4 +631,32 @@ public class Dao {
 		}
 	}
 
+	public void verwijderKlasVanVak(long klasId, long vakId) {
+		try {
+			PreparedStatement preparedStatement = manager
+					.prepareStatement("DELETE FROM vak_klas WHERE vak_id = ? AND klas_id = ?");
+			preparedStatement.setLong(1, vakId);
+			preparedStatement.setLong(2, klasId);
+
+			preparedStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public List<Klas> getKlassen() {
+		List<Klas> klassen = new ArrayList<Klas>();
+		try {
+			PreparedStatement preparedStatement = manager
+					.prepareStatement("SELECT id FROM klassen");
+			ResultSet result = preparedStatement.executeQuery();
+
+			while (result.next()) {
+				klassen.add(getKlas(result.getLong(1)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return klassen;
+	}
 }
