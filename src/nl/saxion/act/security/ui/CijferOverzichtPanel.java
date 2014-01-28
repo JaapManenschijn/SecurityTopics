@@ -2,11 +2,12 @@ package nl.saxion.act.security.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JList;
@@ -57,22 +58,39 @@ public class CijferOverzichtPanel extends JPanel {
 		}
 
 		if (Sessie.getIngelogdeGebruiker().heeftPermissie(
-				PermissieHelper.permissies.get("INZIENEIGENSTUDENTEN"))) {
-			JComboBox comboBox = new JComboBox();
+				PermissieHelper.permissies.get("INZIENEIGENSTUDENTEN"))
+				|| Sessie.getIngelogdeGebruiker().heeftPermissie(
+						PermissieHelper.permissies.get("INZIENALLESTUDENTEN"))) {
+			final JComboBox comboBox = new JComboBox();
+			comboBox.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (comboBox.getSelectedItem() instanceof User) {
+						User student = (User) comboBox.getSelectedItem();
+						vakLijst.clear();
+						List<Vak> vakken = Dao.getInstance()
+								.getVakkenVanStudent(student.getId());
+						for (Vak vak : vakken) {
+							vakLijst.addElement(vak);
+						}
+					} else {
+						vakLijst.clear();
+						cijferPanel.clear();
+					}
+				}
+			});
 			add(comboBox, BorderLayout.NORTH);
-			DefaultComboBoxModel model;
+			comboBox.addItem("Selecteer een leerling...");
 			if (Sessie.getIngelogdeGebruiker().heeftPermissie(
 					PermissieHelper.permissies.get("INZIENALLESTUDENTEN"))) {
-				model = new DefaultComboBoxModel<User>((User[]) Dao
-						.getInstance().getStudenten().toArray());
+				for (User student : Dao.getInstance().getStudenten()) {
+					comboBox.addItem(student);
+				}
 			} else {
-				model = new DefaultComboBoxModel<User>((User[]) Dao
-						.getInstance()
-						.getStudentenVanDocent(
-								Sessie.getIngelogdeGebruiker().getId())
-						.toArray());
+				for (User student : Dao.getInstance().getStudentenVanDocent(
+						Sessie.getIngelogdeGebruiker().getId())) {
+					comboBox.addItem(student);
+				}
 			}
-			comboBox.setModel(model);
 		}
 	}
 }
