@@ -194,7 +194,7 @@ public class Dao {
 		double cijfer = 0.0;
 		try {
 			PreparedStatement prepareStatement = manager
-					.prepareStatement("SELECT toets_id FROM toetsen WHERE vak_id = ?");
+					.prepareStatement("SELECT id FROM toetsen WHERE vak_id = ?");
 			prepareStatement.setLong(1, vakId);
 			ResultSet resultSet = prepareStatement.executeQuery();
 
