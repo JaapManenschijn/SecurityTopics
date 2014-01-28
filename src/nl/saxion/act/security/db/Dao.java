@@ -389,7 +389,7 @@ public class Dao {
 			PreparedStatement prepareStatement = manager
 					.prepareStatement("SELECT id FROM vakken WHERE docent_id = ?");
 			PreparedStatement vakklasStatement = manager
-					.prepareStatement("SELECT klas_id FROM klassen WHERE vak_id = ?");
+					.prepareStatement("SELECT klas_id FROM vak_klas WHERE vak_id = ?");
 			prepareStatement.setLong(1, docent_id);
 			ResultSet resultSet = prepareStatement.executeQuery();
 			while (resultSet.next()) {
