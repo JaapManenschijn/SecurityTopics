@@ -550,4 +550,34 @@ public class Dao {
 			e.printStackTrace();
 		}
 	}
+
+	public void verwijderLeerlingUitKlas(long leerlingId, long klasId) {
+		try {
+			PreparedStatement preparedStatement = manager
+					.prepareStatement("DELETE FROM leerling_klas WHERE leerling_id = ? AND klas_id = ?");
+			preparedStatement.setLong(1, leerlingId);
+			preparedStatement.setLong(2, klasId);
+
+			preparedStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void verwijderVak(long vakId) {
+		try {
+			PreparedStatement preparedStatement = manager
+					.prepareStatement("DELETE FROM vak_klas WHERE vak_id = ?");
+			preparedStatement.setLong(1, vakId);
+			preparedStatement.execute();
+
+			preparedStatement = manager
+					.prepareStatement("DELETE FROM vakken WHERE id = ?");
+			preparedStatement.setLong(1, vakId);
+			preparedStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 }
