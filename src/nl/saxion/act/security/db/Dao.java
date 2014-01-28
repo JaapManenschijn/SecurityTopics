@@ -93,12 +93,64 @@ public class Dao {
 
 			if (resultSet.next()) {
 				rol = new Rol(resultSet.getLong(1), resultSet.getString(2));
+				for (Permissie p : getPermissiesVanRol(rolId)) {
+					rol.addPermissie(p);
+				}
 			}
 			return rol;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return rol;
 		}
+	}
+
+	public List<User> getStudenten() {
+		List<User> studenten = new ArrayList<User>();
+		try {
+			PreparedStatement preparedStatement = manager
+					.prepareStatement("SELECT user_id FROM user_rol WHERE rol_id = 3");
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				studenten.add(getUser(resultSet.getLong(1)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return studenten;
+	}
+
+	public List<User> getStudentenVanDocent(long docentId) {
+		List<User> studenten = new ArrayList<User>();
+		for (Klas k : getKlassenVanDocent(docentId)) {
+			for (User student : k.getLeerlingen()) {
+				studenten.add(student);
+			}
+		}
+		return studenten;
+	}
+
+	public List<Permissie> getPermissiesVanRol(long rolId) {
+		List<Permissie> permissies = new ArrayList<Permissie>();
+		try {
+			PreparedStatement prepareStatement = manager
+					.prepareStatement("SELECT permissie_id FROM rol_permissie WHERE rol_id = ?");
+			prepareStatement.setLong(1, rolId);
+			ResultSet resultSet = prepareStatement.executeQuery();
+			PreparedStatement permissie = manager
+					.prepareStatement("SELECT * FROM permissie WHERE id = ?");
+			while (resultSet.next()) {
+				permissie.setLong(1, resultSet.getLong(1));
+				ResultSet permResult = permissie.executeQuery();
+				if (permResult.next()) {
+					Permissie perm = new Permissie(permResult.getLong(1),
+							permResult.getString(2));
+					permissies.add(perm);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return permissies;
 	}
 
 	public User getUser(long userId) {
